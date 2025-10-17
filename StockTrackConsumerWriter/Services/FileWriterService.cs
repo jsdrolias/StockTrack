@@ -24,7 +24,7 @@ public class FileWriterService : IFileWriterService, IDisposable
         _logger = logger;
         _batchSize = options.Value.BatchSize;
 
-        var fileName = LoggerHelper.GetFullFilePath("stock-data", "json");
+        var fileName = LoggerHelper.GetFullFilePath("stock-data");
         _writer = new StreamWriter(fileName, append: true);
 
         _logger.LogInformation("Batch FileWriterService initialized. Batch size: {BatchSize}, File: {FileName}",
@@ -47,7 +47,7 @@ public class FileWriterService : IFileWriterService, IDisposable
                     sb.AppendLine(); // Add newline between messages
                 }
 
-                sb.Append($"{message.Timestamp:yyyy-MM-dd HH:mm:ss.fff} | {message.Stock} | ${message.Price:F2}");
+                sb.Append($"{message.Timestamp:yyyy-MM-dd HH:mm:ss.fffffff} | {message.Stock} | ${message.Price:F2}");
                 count++;
             }
 

@@ -21,7 +21,7 @@ public class MetricsReportingService : IMetricsReportingService
     {
         var metricsJson = _metricsService.GetAllMetricsAsJson();
 
-        var metricsFile = LoggerHelper.GetFullFilePath("metrics");
+        var metricsFile = LoggerHelper.GetFullFilePath("metrics", "json");
 
         await File.WriteAllTextAsync(metricsFile, metricsJson, cancellationToken);
 
