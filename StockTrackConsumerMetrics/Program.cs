@@ -25,6 +25,7 @@ class Program
                 {
                     options.ConsumerGroupId = Environment.GetEnvironmentVariable("CONSUMER_GROUP_ID") ?? "stock-metrics-group";
                     options.SlidingWindowSeconds = int.Parse(Environment.GetEnvironmentVariable("SLIDING_WINDOW_SECONDS") ?? "60");
+                    options.OutputIntervalSeconds = int.TryParse(Environment.GetEnvironmentVariable("OUTPUT_INTERVAL_SECONDS"), out var interval) ? interval : 6;
                 });
 
                 services.AddSerilog();

@@ -13,6 +13,7 @@ public class ConsumerMetricsWorker : BackgroundService
     private readonly IMetricsService _metricsService;
     private readonly IMetricsReportingService _reportingService;
     private long _messagesProcessed = 0;
+    private int _outputIntervalSeconds;
 
     public ConsumerMetricsWorker(
         ILogger<ConsumerMetricsWorker> logger,
@@ -25,6 +26,7 @@ public class ConsumerMetricsWorker : BackgroundService
         _kafkaConsumer = kafkaConsumer;
         _metricsService = metricsService;
         _reportingService = reportingService;
+        _outputIntervalSeconds = options.Value.OutputIntervalSeconds;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -82,7 +84,7 @@ public class ConsumerMetricsWorker : BackgroundService
             try
             {
                 // Save metrics to file periodically
-                await Task.Delay(TimeSpan.FromSeconds(6), cancellationToken);
+                await Task.Delay(TimeSpan.FromSeconds(_outputIntervalSeconds), cancellationToken);
                 await _reportingService.SaveMetricsToFileAsync(cancellationToken);
             }
             catch (OperationCanceledException)
