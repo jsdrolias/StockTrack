@@ -1,0 +1,182 @@
+# StockTrack - Distributed Real-Time Stock Price Tracking System
+
+> A scalable distributed system demonstrating real-time stock price processing with Kafka, .NET 8, and Docker.
+
+## Quick Start
+
+### Prerequisites
+- Docker Desktop 
+- Docker Compose 
+
+### Run the System
+```bash
+# Clone and navigate to directory
+git clone https://github.com/jsdrolias/StockTrack.git
+cd StockTrack
+
+# Start all services (2 producers, 1 writer consumer, 1 metrics consumer)
+docker-compose up -d
+
+#or 
+
+# Start services with multiple consumers(2 producers, 3 writer consumer, 2 metrics consumer)
+docker-compose up --scale consumer-writer=3 --scale consumer-metrics=2
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+```
+   
+## Architecture
+
+The system comprises 3 major components:
+1. Producer application instances that send messages regarding stock price changes
+2. Consumer application instances that act upon receiving the stock price changes
+3. The kafka broker that handles the communication between producers and consumers.
+
+### Producers
+
+Producer application instances send messages regarding stock price changes. Each producer is responsible for a single stock.
+
+Configure via environment variables in `docker-compose.yml`:
+
+| Variable               | Description                         | Example     |
+|------------------------|-------------------------------------|-------------|
+| STOCK_SIGN             | Stock ticker symbol                 | AAPL        |
+| STARTING_PRICE         | Initial stock price                 | 242.65      |
+| HEARTBEAT_MS           | Update frequency (ms)               | 100         |
+| PROBABILITY_UP         | Probability of price increase (0-1) | 0.52        |
+| MAX_CHANGE_PERCENT     | Maximum price change %              | 20          |
+
+**Example: Adding a New Producer**
+
+```yaml
+producer-msft:
+  build:
+    context: .
+    dockerfile: StockTrackProducer/Dockerfile
+  depends_on:
+    kafka:
+      condition: service_healthy
+  environment:
+    - STOCK_SIGN=MSFT
+    - STARTING_PRICE=380.50
+    - HEARTBEAT_MS=200
+    - PROBABILITY_UP=0.55
+    - MAX_CHANGE_PERCENT=10
+  volumes:
+    - ./output:/app/output
+  networks:
+    - kafka-network
+```
+
+### Kafka
+
+Kafka's consumer group mechanism automatically distributes partitions across instances.
+
+For the partitioning:
+
+- **10 partitions** configured (can be adjusted in `docker-compose.yml`)
+- **Partition key**: Stock symbol (ensures all updates for a stock go to same partition. **This ensures ordering of messages per stock**)
+- **Load distribution**: Kafka balances partitions across consumer group members
+
+### Consumers
+
+The consumer application instances can be further subcategorized into 2 types:
+1. Instances that receive the stock price changes and write them to a file
+2. Instances that calculate the required metrics and write them into a file.
+   Real-time calculation of:
+  - Total messages received
+  - Min/max price per stock (all-time)
+  - High/low/open/close prices in sliding windows (for candlestick charts)
+
+The 2 different consumer types use separate kafka consumer groups in order to ensure that all messages are consumed by both of them and are processed independently.
+
+#### Consumer Writer Configuration
+
+| Variable                | Description           | Default            |
+|-------------------------|-----------------------|--------------------|
+| CONSUMER_GROUP_ID       | Consumer group name   | stock-writer-group |
+| BATCH_SIZE              | Messages per batch    | 100                |
+
+The application writes the messages to disk in configurable batch sizes to reduce I/O operations.
+
+#### Consumer Metrics Configuration
+
+| Variable                | Description                             | Default             |
+|-------------------------|-----------------------------------------|---------------------|
+| CONSUMER_GROUP_ID       | Consumer group name                     | stock-metrics-group |
+| SLIDING_WINDOW_SECONDS  | Window duration for candlestick metrics | 5                   |
+
+The application calculates the metrics and holds them in memory.
+A separate task writes the metrics to disk in a configurable periodic cycle.
+It should be noted that the current sliding window will not be written to the file unless the window has expired.
+Furthermore, multiple instances of the writer will write to respective files. A better approach would be a common shared store like Redis or a database.
+
+## Architecture Decisions
+
+### Separate Consumer Applications vs Single App 
+
+This implementation uses **two separate consumer applications** rather than multiple consumers in a single app.
+
+**Benefits:**
+- **Independent scaling**: Scale writers and metrics consumers separately based on their resource needs
+- **Failure isolation**: If metrics calculation fails, file writing continues unaffected
+- **Resource allocation**: Assign different CPU/memory per concern
+- **Deployment flexibility**: Deploy, update, or rollback independently
+- **Microservices alignment**: Better separation of concerns
+
+**Alternative Approach:**
+
+Multiple `BackgroundService` instances could be used in one application, sharing the same process. This would be preferable when:
+- Running in resource-constrained environments
+- Both consumers have identical scaling needs
+- Deployment simplicity is prioritized over operational flexibility
+- Need to share in-memory state between consumers
+- Lower operational complexity is more important than independent scaling
+
+Note: This approach would require a different implementation for metrics calculations to ensure thread safety.
+
+**Choice**: Multiple application instances with separate consumer apps. This approach demonstrates flexibility and a more robust distributed architecture suitable for production environments.
+
+### Configuration Strategy
+
+Application options are passed as environment variables via Docker Compose. App settings could be added as well to allow for more control in development/testing environments.
+
+## Logging - Output files
+
+All files are generated in the `./output/` directory:
+
+**Logs** (Serilog structured logging):
+- `stock-producer-logs-<guid>.txt` - Producer logs
+- `stock-consumer-writer-logs-<guid>.txt` - Writer consumer logs
+- `stock-consumer-metrics-logs-<guid>.txt` - Metrics consumer logs
+
+Each log filename contains a random GUID per instance for correlation. Examples:
+- `stock-producer-logs-e0513d61`
+- `stock-consumer-writer-logs-a23385cb`
+- `stock-consumer-metrics-logs-6f05ac01`
+
+**Data Files**:
+- `stock-data-<guid>.txt` - Raw stock price messages
+- `metrics-<guid>.txt` - Calculated metrics (JSON format)
+
+## Unit tests
+
+A test project has been added to the solution as an example.
+Follows the same structure as the project it tests against, but contain the suffix "tests".
+xUnit, FluentAssertions, NSubstitute packages have been used.
+
+For the execution:
+1. Open powershell
+2. Navigate into the main folder of the solution
+3. Execute ```dotnet test StockTrackProducerTests```
+
+## Future Work
+
+- Add integration tests. Can use Testcontainers for Kafka.
+- Implement dead letter queue for failed messages
+- Add retry policies with Polly
+- Use a common shared store for metrics like Redis or a database

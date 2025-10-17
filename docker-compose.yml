@@ -1,0 +1,139 @@
+version: '3.8'
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    hostname: zookeeper
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - kafka-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    hostname: kafka
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "9101:9101"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_JMX_PORT: 9101
+      KAFKA_JMX_HOSTNAME: localhost
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      KAFKA_NUM_PARTITIONS: 10
+    networks:
+      - kafka-network
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-broker-api-versions --bootstrap-server kafka:29092 || exit 1"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 30s 
+  
+  # Kafka UI - Web interface for Kafka
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    depends_on:
+      - kafka
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+      DYNAMIC_CONFIG_ENABLED: 'true'
+    networks:
+      - kafka-network
+
+  producer-aapl:
+    build:
+      context: .
+      dockerfile: StockTrackProducer/Dockerfile
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - STOCK_SIGN=AAPL
+      - STARTING_PRICE=242.65
+      - HEARTBEAT_MS=100
+      - PROBABILITY_UP=0.52 # assuming 0.5 is the neutral point
+      - MAX_CHANGE_PERCENT=20
+    volumes:
+      - ./output:/app/output
+    networks:
+      - kafka-network
+
+  producer-googl:
+    build:
+      context: .
+      dockerfile: StockTrackProducer/Dockerfile
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - STOCK_SIGN=GOOGL
+      - STARTING_PRICE=142.30
+      - HEARTBEAT_MS=300
+      - PROBABILITY_UP=0.48 # assuming 0.5 is the neutral point
+      - MAX_CHANGE_PERCENT=15
+    volumes:
+      - ./output:/app/output
+    networks:
+      - kafka-network
+
+  # Writer consumers - scale with: docker-compose up --scale consumer-writer=5 -d
+  consumer-writer:
+    build:
+      context: .
+      dockerfile: StockTrackConsumerWriter/Dockerfile
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - CONSUMER_GROUP_ID=stock-writer-group
+      - BATCH_SIZE=50
+    volumes:
+      - ./output:/app/output
+    networks:
+      - kafka-network
+    restart: unless-stopped
+
+  # Metrics consumers - scale with: docker-compose up --scale consumer-metrics=2 -d
+  consumer-metrics:
+    build:
+      context: .
+      dockerfile: StockTrackConsumerMetrics/Dockerfile
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - CONSUMER_GROUP_ID=stock-metrics-group
+      - SLIDING_WINDOW_SECONDS=5
+    volumes:
+      - ./output:/app/output
+    networks:
+      - kafka-network
+    restart: unless-stopped
+
+networks:
+  kafka-network:
+    driver: bridge

@@ -1,0 +1,60 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11111.16
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockTrackProducer", "StockTrackProducer\StockTrackProducer.csproj", "{9237D90A-1562-42EF-9FAC-70BB57754F26}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Packages.props = Directory.Packages.props
+	EndProjectSection
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{81DDED9D-158B-E303-5F62-77A2896D2A5A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockTrackProducerTests", "StockTrackProducerTests\StockTrackProducerTests.csproj", "{0E7E0DA1-AE38-48F1-8B23-3063453D6511}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockTrackConsumerMetrics", "StockTrackConsumerMetrics\StockTrackConsumerMetrics.csproj", "{54DBF710-0715-4EBC-B350-E78276CCB394}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockTrackConsumerWriter", "StockTrackConsumerWriter\StockTrackConsumerWriter.csproj", "{DCDBC6DC-9E9C-4B92-8045-3B738444720C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockTrackCommonLib", "StockTrackCommonLib\StockTrackCommonLib.csproj", "{B8AAD325-9737-4BF9-A969-55B2001F5D15}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9237D90A-1562-42EF-9FAC-70BB57754F26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9237D90A-1562-42EF-9FAC-70BB57754F26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9237D90A-1562-42EF-9FAC-70BB57754F26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9237D90A-1562-42EF-9FAC-70BB57754F26}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E7E0DA1-AE38-48F1-8B23-3063453D6511}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E7E0DA1-AE38-48F1-8B23-3063453D6511}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E7E0DA1-AE38-48F1-8B23-3063453D6511}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E7E0DA1-AE38-48F1-8B23-3063453D6511}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54DBF710-0715-4EBC-B350-E78276CCB394}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54DBF710-0715-4EBC-B350-E78276CCB394}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54DBF710-0715-4EBC-B350-E78276CCB394}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54DBF710-0715-4EBC-B350-E78276CCB394}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DCDBC6DC-9E9C-4B92-8045-3B738444720C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DCDBC6DC-9E9C-4B92-8045-3B738444720C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DCDBC6DC-9E9C-4B92-8045-3B738444720C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DCDBC6DC-9E9C-4B92-8045-3B738444720C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8AAD325-9737-4BF9-A969-55B2001F5D15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8AAD325-9737-4BF9-A969-55B2001F5D15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8AAD325-9737-4BF9-A969-55B2001F5D15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8AAD325-9737-4BF9-A969-55B2001F5D15}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A871BBAF-FD50-41FB-BDC0-6181CEB167D8}
+	EndGlobalSection
+EndGlobal

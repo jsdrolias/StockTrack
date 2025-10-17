@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "StockTrackConsumerWriter": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}
