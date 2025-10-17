@@ -199,7 +199,7 @@ Each log filename contains a random GUID per instance for correlation. Examples:
 ```
 
 **Stock data**
-```json
+```
 2025-10-17 12:55:08.5524245 | AAPL | $251.77
 2025-10-17 12:55:14.4309022 | AAPL | $232.82
 2025-10-17 12:55:14.5512776 | AAPL | $209.73
