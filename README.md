@@ -110,7 +110,7 @@ The application writes the messages to disk in configurable batch sizes to reduc
 | CONSUMER_GROUP_ID       | Consumer group name                     | stock-metrics-group |
 | SLIDING_WINDOW_SECONDS  | Window duration for candlestick metrics | 5                   |
 
-The application calculates the metrics and holds them in memory (it will grow indefinately and eventually crash the system and is acceptable for the demo).
+The application calculates the metrics and holds them in memory (it will grow indefinately and eventually crash the system but is acceptable for the demo).
 A separate task writes the metrics to disk in a configurable periodic cycle.
 It should be noted that the current sliding window will not be written to the file unless the window has expired.
 Furthermore, multiple instances of the writer will write to respective files. A better approach would be a common shared store like Redis or a database.
@@ -162,6 +162,56 @@ Each log filename contains a random GUID per instance for correlation. Examples:
 **Data Files**:
 - `stock-data-<guid>.txt` - Raw stock price messages
 - `metrics-<guid>.txt` - Calculated metrics (JSON format)
+
+### Examples
+
+**Metrics**
+```json
+{
+  "totalMessages": 81,
+  "stockSpecificMetrics": {
+    "GOOGL": {
+      "stockMinMaxPrice": {
+        "minPrice": 41.9,
+        "maxPrice": 145.81
+      },
+      "stockSlidingWindowMetrics": [
+        {
+          "openPrice": 145.81,
+          "closePrice": 100.82,
+          "highPrice": 145.81,
+          "lowPrice": 62.83,
+          "windowStart": "2025-10-17T12:55:09.2652887Z",
+          "windowEnd": "2025-10-17T12:55:19.2884728Z"
+        },
+        {
+          "openPrice": 96.83,
+          "closePrice": 84.38,
+          "highPrice": 107.5,
+          "lowPrice": 41.9,
+          "windowStart": "2025-10-17T12:55:19.2884728Z",
+          "windowEnd": "2025-10-17T12:55:29.4890802Z"
+        }
+      ]
+    }
+  }
+}
+```
+
+**Stock data**
+```json
+2025-10-17 12:55:08.5524245 | AAPL | $251.77
+2025-10-17 12:55:14.4309022 | AAPL | $232.82
+2025-10-17 12:55:14.5512776 | AAPL | $209.73
+2025-10-17 12:55:14.6737170 | AAPL | $228.77
+2025-10-17 12:55:14.8276285 | AAPL | $184.79
+2025-10-17 12:55:14.9446580 | AAPL | $221.45
+2025-10-17 12:55:15.0756679 | AAPL | $216.69
+2025-10-17 12:55:15.2026882 | AAPL | $174.39
+2025-10-17 12:55:15.3326329 | AAPL | $148.24
+2025-10-17 12:55:15.4551556 | AAPL | $152.99
+```
+
 
 ## Unit tests
 
