@@ -22,9 +22,9 @@ public static class LoggerHelper
         return logger;
     }
 
-    public static string GetFullFilePath(string filename)
+    public static string GetFullFilePath(string filename, string extension = "txt")
     {
-        var filePath = Path.Combine(_output, $"{filename}-{_instanceId}.txt");
+        var filePath = Path.Combine(_output, $"{filename}-{_instanceId}.{extension}");
         return filePath;
     }
 }

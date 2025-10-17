@@ -24,7 +24,7 @@ public class FileWriterService : IFileWriterService, IDisposable
         _logger = logger;
         _batchSize = options.Value.BatchSize;
 
-        var fileName = LoggerHelper.GetFullFilePath("stock-data");
+        var fileName = LoggerHelper.GetFullFilePath("stock-data", "json");
         _writer = new StreamWriter(fileName, append: true);
 
         _logger.LogInformation("Batch FileWriterService initialized. Batch size: {BatchSize}, File: {FileName}",
