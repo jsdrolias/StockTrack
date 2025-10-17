@@ -82,7 +82,7 @@ public class ConsumerMetricsWorker : BackgroundService
             try
             {
                 // Save metrics to file periodically
-                await Task.Delay(TimeSpan.FromSeconds(2), cancellationToken);
+                await Task.Delay(TimeSpan.FromSeconds(6), cancellationToken);
                 await _reportingService.SaveMetricsToFileAsync(cancellationToken);
             }
             catch (OperationCanceledException)

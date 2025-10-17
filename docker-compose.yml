@@ -127,7 +127,7 @@ services:
     environment:
       - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
       - CONSUMER_GROUP_ID=stock-metrics-group
-      - SLIDING_WINDOW_SECONDS=5
+      - SLIDING_WINDOW_SECONDS=10
     volumes:
       - ./output:/app/output
     networks:
