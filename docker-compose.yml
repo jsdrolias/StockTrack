@@ -68,7 +68,6 @@ services:
       kafka:
         condition: service_healthy
     environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
       - STOCK_SIGN=AAPL
       - STARTING_PRICE=242.65
       - HEARTBEAT_MS=100
@@ -87,7 +86,6 @@ services:
       kafka:
         condition: service_healthy
     environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
       - STOCK_SIGN=GOOGL
       - STARTING_PRICE=142.30
       - HEARTBEAT_MS=300
@@ -107,7 +105,6 @@ services:
       kafka:
         condition: service_healthy
     environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
       - CONSUMER_GROUP_ID=stock-writer-group
       - BATCH_SIZE=50
     volumes:
@@ -125,7 +122,6 @@ services:
       kafka:
         condition: service_healthy
     environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
       - CONSUMER_GROUP_ID=stock-metrics-group
       - SLIDING_WINDOW_SECONDS=10
       - OUTPUT_INTERVAL_SECONDS=6

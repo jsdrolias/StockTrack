@@ -105,10 +105,11 @@ The application writes the messages to disk in configurable batch sizes to reduc
 
 #### Consumer Metrics Configuration
 
-| Variable                | Description                             | Default             |
-|-------------------------|-----------------------------------------|---------------------|
-| CONSUMER_GROUP_ID       | Consumer group name                     | stock-metrics-group |
-| SLIDING_WINDOW_SECONDS  | Window duration for candlestick metrics | 5                   |
+| Variable                | Description                              | Default             |
+|-------------------------|------------------------------------------|---------------------|
+| CONSUMER_GROUP_ID       | Consumer group name                      | stock-metrics-group |
+| SLIDING_WINDOW_SECONDS  | Window duration for candlestick metrics  | 10                  |
+| OUTPUT_INTERVAL_SECONDS | Interval for metrics output to file      | 6                   |
 
 The application calculates the metrics and holds them in memory (it will grow indefinately and eventually crash the system but is acceptable for the demo).
 A separate task writes the metrics to disk in a configurable periodic cycle.
