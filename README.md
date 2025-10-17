@@ -110,7 +110,7 @@ The application writes the messages to disk in configurable batch sizes to reduc
 | CONSUMER_GROUP_ID       | Consumer group name                     | stock-metrics-group |
 | SLIDING_WINDOW_SECONDS  | Window duration for candlestick metrics | 5                   |
 
-The application calculates the metrics and holds them in memory.
+The application calculates the metrics and holds them in memory (it will grow indefinately and eventually crash the system and is acceptable for the demo).
 A separate task writes the metrics to disk in a configurable periodic cycle.
 It should be noted that the current sliding window will not be written to the file unless the window has expired.
 Furthermore, multiple instances of the writer will write to respective files. A better approach would be a common shared store like Redis or a database.
