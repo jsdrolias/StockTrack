@@ -1,9 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using StockTrackCommonLib.Helpers;
 using StockTrackCommonLib.Models;
 using StockTrackConsumerWriter.Abstractions;
-using StockTrackConsumerWriter.Options;
 using System.Text;
 
 namespace StockTrackConsumerWriter.Services;
@@ -12,17 +10,16 @@ public class FileWriterService : IFileWriterService, IDisposable
 {
     private readonly ILogger<FileWriterService> _logger;
     private readonly StreamWriter _writer;
-    private readonly List<string> _batch = new();
     private readonly SemaphoreSlim _semaphore = new(1, 1);
     private long _messageCount = 0;
 
-    public FileWriterService(
-        ILogger<FileWriterService> logger)
+    public FileWriterService(ILogger<FileWriterService> logger)
     {
         _logger = logger;
-
         var fileName = LoggerHelper.GetFullFilePath("stock-data");
         _writer = new StreamWriter(fileName, append: true);
+
+        _logger.LogInformation("FileWriterService initialized. File: {FileName}", fileName);
     }
 
     public async Task WriteMessagesAsync(IEnumerable<StockMessage> messages, CancellationToken cancellationToken = default)
@@ -30,7 +27,6 @@ public class FileWriterService : IFileWriterService, IDisposable
         await _semaphore.WaitAsync(cancellationToken);
         try
         {
-            // Build entire batch as a single string
             var sb = new StringBuilder();
             var count = 0;
 
@@ -38,16 +34,15 @@ public class FileWriterService : IFileWriterService, IDisposable
             {
                 if (count > 0)
                 {
-                    sb.AppendLine(); // Add newline between messages
+                    sb.AppendLine();
                 }
-
                 sb.Append($"{message.Timestamp:yyyy-MM-dd HH:mm:ss.fffffff} | {message.Stock} | ${message.Price:F2}");
                 count++;
             }
 
             await _writer.WriteAsync(sb.ToString());
             await _writer.WriteAsync(Environment.NewLine);
-            await _writer.FlushAsync();
+            await _writer.FlushAsync(cancellationToken);
 
             _messageCount += count;
 
@@ -59,29 +54,12 @@ public class FileWriterService : IFileWriterService, IDisposable
         }
     }
 
-    private async Task FlushBatchAsync()
-    {
-        if (_batch.Count == 0)
-            return;
-
-        foreach (var line in _batch)
-        {
-            await _writer.WriteLineAsync(line);
-        }
-        await _writer.FlushAsync();
-
-        _logger.LogInformation("Flushed batch of {Count} messages. Total: {Total}",
-            _batch.Count, _messageCount);
-
-        _batch.Clear();
-    }
-
     public async Task FlushAsync()
     {
         await _semaphore.WaitAsync();
         try
         {
-            await FlushBatchAsync();
+            await _writer.FlushAsync();
             _logger.LogInformation("Final flush. Total messages written: {Count}", _messageCount);
         }
         finally
@@ -92,9 +70,16 @@ public class FileWriterService : IFileWriterService, IDisposable
 
     public void Dispose()
     {
-        FlushBatchAsync().Wait();
-        _writer?.Dispose();
-        _semaphore?.Dispose();
-        _logger.LogInformation("FileWriterBatchService disposed");
+        try
+        {
+            // Final flush before disposal
+            _writer?.Flush();
+            _logger.LogInformation("FileWriterService disposed. Total messages: {Count}", _messageCount);
+        }
+        finally
+        {
+            _writer?.Dispose();
+            _semaphore?.Dispose();
+        }
     }
 }
