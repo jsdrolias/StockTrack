@@ -14,21 +14,15 @@ public class FileWriterService : IFileWriterService, IDisposable
     private readonly StreamWriter _writer;
     private readonly List<string> _batch = new();
     private readonly SemaphoreSlim _semaphore = new(1, 1);
-    private readonly int _batchSize;
     private long _messageCount = 0;
 
     public FileWriterService(
-        ILogger<FileWriterService> logger,
-        IOptions<ConsumerOptions> options)
+        ILogger<FileWriterService> logger)
     {
         _logger = logger;
-        _batchSize = options.Value.BatchSize;
 
         var fileName = LoggerHelper.GetFullFilePath("stock-data");
         _writer = new StreamWriter(fileName, append: true);
-
-        _logger.LogInformation("Batch FileWriterService initialized. Batch size: {BatchSize}, File: {FileName}",
-            _batchSize, fileName);
     }
 
     public async Task WriteMessagesAsync(IEnumerable<StockMessage> messages, CancellationToken cancellationToken = default)

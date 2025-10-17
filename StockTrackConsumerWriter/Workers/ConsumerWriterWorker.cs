@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using StockTrackCommonLib.Models;
 using StockTrackConsumerWriter.Abstractions;
+using StockTrackConsumerWriter.Options;
 
 namespace StockTrackConsumerWriter.Workers;
 
@@ -11,16 +13,18 @@ public class ConsumerWriterWorker : BackgroundService
     private readonly IKafkaConsumerService _kafkaConsumer;
     private readonly IFileWriterService _fileWriter;
     private long _messagesProcessed = 0;
-    private readonly int _batchSize = 100; // Process 100 messages before commit
+    private readonly int _batchSize;
 
     public ConsumerWriterWorker(
         ILogger<ConsumerWriterWorker> logger,
         IKafkaConsumerService kafkaConsumer,
-        IFileWriterService fileWriter)
+        IFileWriterService fileWriter,
+        IOptions<ConsumerOptions> options)
     {
         _logger = logger;
         _kafkaConsumer = kafkaConsumer;
         _fileWriter = fileWriter;
+        _batchSize = options.Value.BatchSize;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
