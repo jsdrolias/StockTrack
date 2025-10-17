@@ -64,7 +64,7 @@ public class StockProducerWorker : BackgroundService
 
                 _logger.LogInformation(
                       "Published message #{Count} - {Stock}: ${Price} to partition {Partition} at {Timestamp}",
-                      _messageCount, _options.StockSign, currentPrice, partition, timeStamp.ToString("O"));
+                      _messageCount, _options.StockSign, currentPrice, partition, timeStamp.ToString("yyyy-MM-dd HH:mm:ss.fffffff"));
 
                 _messageCount++;
 

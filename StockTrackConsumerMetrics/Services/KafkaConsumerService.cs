@@ -55,7 +55,7 @@ public class KafkaConsumerService : IKafkaConsumerService, IDisposable
 
             if (message != null)
             {
-                _logger.LogDebug(
+                _logger.LogInformation(
                     "Consumed message - Stock: {Stock}, Price: ${Price}, Partition: {Partition}, Offset: {Offset}",
                     message.Stock, message.Price, result.Partition.Value, result.Offset.Value);
             }
