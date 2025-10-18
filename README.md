@@ -120,7 +120,7 @@ It should be noted that the current sliding window will not be written to the fi
 
 Furthermore, multiple instances of the writer will write to respective files. A better approach would be a common shared store like Redis or a database.
 
-This argument is further strenghted by the fact that as consumers are added/removed, consumer rebalancing will occur and some messages may be reprocessed by different instances, leading to inaccurate metrics and logs.
+This argument is further strenghted by the fact that as consumers are added/removed, consumer rebalancing will occur and some messages may be reprocessed by different instances, leading to inaccurate metrics and fragmented logs per stock.
 
 ## Architecture Decisions
 
