@@ -88,7 +88,7 @@ services:
     environment:
       - STOCK_SIGN=GOOGL
       - STARTING_PRICE=142.30
-      - HEARTBEAT_MS=300
+      - HEARTBEAT_MS=150
       - PROBABILITY_UP=0.48 # assuming 0.5 is the neutral point
       - MAX_CHANGE_PERCENT=15
     volumes:

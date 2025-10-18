@@ -101,7 +101,7 @@ The 2 different consumer types use separate kafka consumer groups in order to en
 | Variable                | Description           | Default            |
 |-------------------------|-----------------------|--------------------|
 | CONSUMER_GROUP_ID       | Consumer group name   | stock-writer-group |
-| BATCH_SIZE              | Messages per batch    | 100                |
+| BATCH_SIZE              | Messages per batch    | 50                |
 
 The application writes the messages to disk in configurable batch sizes to reduce I/O operations.
 
