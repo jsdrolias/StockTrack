@@ -133,7 +133,9 @@ This implementation uses **two separate consumer applications** rather than mult
 
 **Alternative Approach:**
 
-Multiple `BackgroundService` instances could be used in one application, sharing the same process. This would be preferable when:
+Multiple `BackgroundService` instances could be used in one application, sharing the same process. 
+In addition, one application could have both consumer types and multiple consumer instances of each type.
+This would be preferable when:
 - Running in resource-constrained environments
 - Both consumers have identical scaling needs
 - Deployment simplicity is prioritized over operational flexibility
