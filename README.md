@@ -115,8 +115,11 @@ The application writes the messages to disk in configurable batch sizes to reduc
 
 The application calculates the metrics and holds them in memory (it will grow indefinately and eventually crash the system but is acceptable for the demo).
 A separate task writes the metrics to disk in a configurable periodic cycle.
+
 It should be noted that the current sliding window will not be written to the file unless the window has expired.
+
 Furthermore, multiple instances of the writer will write to respective files. A better approach would be a common shared store like Redis or a database.
+
 This argument is further strenghted by the fact that as consumers are added/removed, consumer rebalancing will occur and some messages may be reprocessed by different instances, leading to inaccurate metrics and logs.
 
 ## Architecture Decisions
