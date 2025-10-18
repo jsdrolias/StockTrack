@@ -51,6 +51,7 @@ Configure via environment variables in `docker-compose.yml`:
 | MAX_CHANGE_PERCENT     | Maximum price change %              | 20          |
 
 **Example: Adding a New Producer**
+A new producer that tracks Microsoft (MSFT) stock can be added by editing docker compose file as follows:
 
 ```yaml
 producer-msft:
