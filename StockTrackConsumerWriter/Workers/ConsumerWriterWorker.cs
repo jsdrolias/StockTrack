@@ -57,9 +57,6 @@ public class ConsumerWriterWorker : BackgroundService
                         batch.Clear();
                     }
                 }
-
-                // Small delay
-                await Task.Delay(10, stoppingToken);
             }
 
             // Process remaining messages

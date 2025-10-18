@@ -44,10 +44,12 @@ public class KafkaConsumerService : IKafkaConsumerService, IDisposable
     {
         try
         {
-            var result = _consumer.Consume(TimeSpan.FromSeconds(1));
+            var result = _consumer.Consume(cancellationToken);
 
             if (result == null)
+            {
                 return null;
+            }
 
             _lastResult = result;
 

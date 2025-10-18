@@ -36,7 +36,7 @@ public class FileWriterService : IFileWriterService, IDisposable
                 {
                     sb.AppendLine();
                 }
-                sb.Append($"{message.Timestamp:yyyy-MM-dd HH:mm:ss.fffffff} | {message.Stock} | ${message.Price:F2}");
+                sb.Append($"{message.Timestamp:yyyy-MM-dd HH:mm:ss.fffffff} | {message.Stock} | {message.Index} | ${message.Price:F2}");
                 count++;
             }
 
